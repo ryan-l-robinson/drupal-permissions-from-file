@@ -1,0 +1,40 @@
+/**
+ * Implements hook_user_login
+ */
+function permissions_from_file_user_login(&$edit, $account) {
+
+  // Assign the "test role" role, if necessary.
+  // The role is assigned at login
+  _permissions_from_file_update_permissions($account);
+
+  // Do not redirect password reset requests.
+  if (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
+    if (isset($_GET['target'])) {
+      drupal_goto($_GET['target']);
+    }
+  }
+}
+
+/**
+* Reads from file and determine whether the specified user is in the list
+**/
+function _permissions_from_file_is_role($account) {
+  $contents = file_get_contents('/var/usernames/roleusernames.csv');
+  return preg_match("/$account->name/",$contents); //returns if name is in the file.
+}
+
+/**
+* Calls function that checks if permissions should be found
+**/
+function _permissions_from_file_update_permissions($account) {
+  $is_role = _permissions_from_file_is_role($account);
+  $role = user_role_load_by_name('test role');
+  if ($is_role) {
+    //add permissions to that user
+    user_multiple_role_edit(array($account->uid), 'add_role', $role->rid);
+  }
+  else {
+    //Delete the role assignment, if it exists
+    user_multiple_role_edit(array($account->uid), 'remove_role', $role->rid);
+  }
+}
