@@ -1,0 +1,4 @@
+name = Permissions from File
+description = Checks if a username is in a file and assigns role if so
+package = Custom
+core = 7.x
