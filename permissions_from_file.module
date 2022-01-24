@@ -3,11 +3,10 @@
  */
 function permissions_from_file_user_login(&$edit, $account) {
 
-  // Assign the "test role" role, if necessary.
-  // The role is assigned at login
+  // assign the "test role" role, if necessary.
   _permissions_from_file_update_permissions($account);
 
-  // Do not redirect password reset requests.
+  // do not redirect password reset requests.
   if (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
     if (isset($_GET['target'])) {
       drupal_goto($_GET['target']);
@@ -20,7 +19,8 @@ function permissions_from_file_user_login(&$edit, $account) {
 **/
 function _permissions_from_file_is_role($account) {
   $contents = file_get_contents('/var/usernames/roleusernames.csv');
-  return preg_match("/$account->name/",$contents); //returns if name is in the file.
+  return preg_match("/$account->name/",$contents); 
+  // returns if name is in the file.
 }
 
 /**
@@ -30,11 +30,11 @@ function _permissions_from_file_update_permissions($account) {
   $is_role = _permissions_from_file_is_role($account);
   $role = user_role_load_by_name('test role');
   if ($is_role) {
-    //add permissions to that user
+    // add permissions to that user
     user_multiple_role_edit(array($account->uid), 'add_role', $role->rid);
   }
   else {
-    //Delete the role assignment, if it exists
+    // delete the role assignment, if it exists
     user_multiple_role_edit(array($account->uid), 'remove_role', $role->rid);
   }
 }
